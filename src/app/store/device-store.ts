@@ -1,53 +1,53 @@
-import {create} from "zustand";
-import {devtools} from "zustand/middleware";
-import {UAParser} from "ua-parser-js";
-import Fingerprintjs from "@fingerprintjs/fingerprintjs";
-import { browser } from "process";
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { UAParser } from "ua-parser-js";
+import FingerPrintjs from "@fingerprintjs/fingerprintjs";
 
-type DeviceStore = {
+type DeviceInfoType = {
   device_name: string;
   device_type: string;
+  os: string;
   ip_address: string;
   browser: string;
   fingerprint: string;
 };
 
 type DeviceState = {
-  deviceId: DeviceStore | null;
+  device: DeviceInfoType | null;
   fetchDeviceInfo: () => void;
-}
+};
+
 export const useDeviceStore = create<DeviceState>()(
   devtools((set) => ({
-    deviceId: null,
+    device: null,
     fetchDeviceInfo: async () => {
       const parser = new UAParser();
       const result = parser.getResult();
-      
-      // Fetch IP address using FingerprintJS
-      const fp = await Fingerprintjs.load();
-      const fingerprintjsResult = await fp.get();
 
-     
-     //fetch ip
-     let ip_address:string | null = null;
-     try {
-       const response = await fetch('https://api.ipify.org?format=json');
-       const data = await response.json();
-       ip_address = data.ip;
-     } catch (error) {
-       console.error(error);
-     }
+      //fingerprint
+      const fp = await FingerPrintjs.load();
+      const fingerPrintResult = await fp.get();
 
-     const deviceId = {
-       browser: result.browser.name || "Unknown",
-       os: result.os.name || "Unknown",
-       device_name: result.device.vendor || "Unknown",
-       device_type: result.device.model || "Unknown",
-       ip_address: ip_address || "Unknown",
-       fingerprint: fingerprintjsResult.visitorId,
-     };
+      //fetch ip
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let ip_address = null as any;
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data: { ip: string } = await res.json();
+        ip_address = data.ip;
+      } catch (error) {
+        console.log(error);
+      }
 
-     set({ deviceId });
-   },
-    })), 
-);          
+      const info: DeviceInfoType = {
+        browser: result.browser.name || "unknown",
+        os: result.os.name || "unknown",
+        device_name: result.device.vendor || "unknown",
+        fingerprint: fingerPrintResult.visitorId,
+        device_type: result.device.model || "unknown",
+        ip_address,
+      };
+      set({ device: info });
+    },
+  }))
+);

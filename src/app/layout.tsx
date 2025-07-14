@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Provider from "./provider";
+
 
 export const metadata: Metadata = {
   title: "Digital ID Card",
@@ -14,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-50">
+
+      <Provider>
         {children}
+      </Provider>
       </body>
     </html>
   );

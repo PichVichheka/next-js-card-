@@ -1,13 +1,16 @@
 export type AuthRegisterType = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    os: string;
-    deviceName: string;
-    deviceType: string;
-    fingerprint: string;
-    ipAddress: string;      
-}
-  
+  email: string;
+  user_name: string;
+  full_name: string;
+  password: string;
+  os?: string;
+  device_type?: string;
+  device_name?: string;
+  ip_address?: string;
+  browser?: string;
+};
 
+export type AuthLoginType = {
+  user_name: string;
+  password: string;
+};
