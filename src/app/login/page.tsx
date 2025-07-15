@@ -52,9 +52,16 @@ const Login = () => {
     mutate(data);
   };
   return (
-    <div className="mx-auto w-full max-w-md shadow-lg rounded-2xl p-4 mt-12">
+    <div className="mx-auto w-full max-w-md shadow-lg rounded-2xl p-4 mt-12 bg-gradient-to-br from-blue-100 via-purple-300 to-pink-300">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Heading */}
+          <h1 className="text-2xl font-bold text-center text-black">
+            Welcome Back
+          </h1>
+          <p className="text-sm text-center text-gray-800 mb-6">
+            Sign in to access your digital ID card
+          </p>
           <FormField
             control={form.control}
             name="user_name"
@@ -81,9 +88,22 @@ const Login = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Submitting" : "Submit"}
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold hover:opacity-90"
+          >
+            {isPending ? "Submitting..." : "Sign In"}
           </Button>
+          {/* Footer */}
+          <p className="text-sm text-center text-gray-800 mt-4">
+            Don’t have an account?{" "}
+            <a href="#" className="text-blue-600 hover:underline">
+              Create Account
+            </a>
+          </p>
         </form>
       </Form>
     </div>
