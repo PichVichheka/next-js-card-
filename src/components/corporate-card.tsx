@@ -11,6 +11,7 @@ import {
   Mail,
   MapPin,
   Phone,
+  Pencil,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -19,10 +20,12 @@ const CorporateCard = ({
   me,
   card,
   idx,
+  onEdit,
 }: {
   me: IUser;
   card: CardItem;
   idx: number;
+  onEdit: () => void;
 }) => {
   return (
     <div>
@@ -32,15 +35,14 @@ const CorporateCard = ({
 
         <div key={idx}>
           <Card className="bg-gradient-to-br from-purple-800/90 to-pink-800/90 border-0 shadow-2xl backdrop-blur-sm">
-            <Link href={`/update-card/${card.id}`}>
-              <Button
-                size="sm"
-                variant="outline"
-                className="absolute top-4 right-4 border-white text-white hover:bg-white/10 bg-white/20"
-              >
-                Edit
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 bg-purple-600 text-white border border-purple-600 shadow-lg hover:bg-purple-700"
+              onClick={onEdit}
+            >
+              <Pencil className="w-5 h-5" />
+            </Button>
             <CardContent className="p-0 relative overflow-hidden">
               {/* Artistic Background Elements */}
               <div className="absolute inset-0">

@@ -10,10 +10,12 @@ const MinimalCard = ({
   me,
   card,
   idx,
+  onEdit,
 }: {
   me: IUser;
   card: CardItem;
   idx: number;
+  onEdit: () => void;
 }) => {
   return (
     // <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-4">
@@ -22,15 +24,14 @@ const MinimalCard = ({
 
       <div key={idx}>
         <Card className="bg-white border-4 border-amber-600 shadow-xl relative">
-          <Link href={`/update-card/${card.id}`}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-2 text-amber-600 hover:text-amber-800"
-            >
-              <Pencil className="w-5 h-5" />
-            </Button>
-          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 bg-purple-600 text-white border border-purple-600 shadow-lg hover:bg-purple-700"
+            onClick={onEdit}
+          >
+            <Pencil className="w-5 h-5" />
+          </Button>
           <CardContent className="p-8">
             {/* Formal Header */}
             <div className="text-center border-b-2 border-amber-600 pb-6 mb-6">

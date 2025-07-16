@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { FormValues } from "@/components/update-user-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Mail, User, Edit3 } from "lucide-react";
 import { userRequest } from "@/lib/api/user-api";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,10 +15,22 @@ import CorporateCard from "@/components/corporate-card";
 import Link from "next/link";
 import UpdateUserDialog from "@/components/update-user-dialog";
 import { useState } from "react";
+import ProfileFormForModal from "@/components/ui/ProfileFormForModal";
+import { cardRequest } from "@/lib/api/card-api";
 
 export default function Component() {
   const [open, setOpen] = useState(false);
-  const { GET_ME } = userRequest();
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editCard, setEditCard] = useState<CardItem | null>(null);
+  const { GET_ME, UPDATE_USER } = userRequest();
+  const { CREATE_CARD, UPDATE_CARD } = cardRequest();
+  const createCardMutation = useMutation({
+    mutationFn: CREATE_CARD,
+  });
+  const updateCardMutation = useMutation({
+    mutationFn: (payload) => UPDATE_CARD(editCard?.id ?? "", payload),
+  });
   const {
     data: me,
     isLoading,
@@ -43,9 +55,15 @@ export default function Component() {
     return "error";
   }
 
-  const handleSave = (data: FormValues) => {
-    console.log("Updated user data:", data);
-    // Optional: Make API request to update user
+  const handleSave = async (data: FormValues) => {
+    try {
+      await UPDATE_USER(data); // Call your update API
+      setOpen(false); // Close the dialog
+      refetch(); // Refresh user data
+    } catch (error) {
+      // Handle error (show toast, etc.)
+      console.error(error);
+    }
   };
 
   return (
@@ -135,11 +153,14 @@ export default function Component() {
                   <Edit3 className="w-4 h-4 mr-2" />
                   Edit Profile
                 </Button>
-                <Link href="/create-card">
-                  <Button className="w-full" variant="outline" size="icon">
-                    Create Card
-                  </Button>
-                </Link>
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setShowCreateForm(true)}
+                >
+                  Create Card
+                </Button>
               </div>
             </div>
           </div>
@@ -152,25 +173,79 @@ export default function Component() {
             return (
               <div key={idx}>
                 {card.card_type === "Minimal" && (
-                  <div>
-                    <MinimalCard me={me} card={card} idx={idx} />
-                  </div>
+                  <MinimalCard
+                    me={me}
+                    card={card}
+                    idx={idx}
+                    onEdit={() => {
+                      setEditCard(card);
+                      setShowEditForm(true);
+                    }}
+                  />
                 )}
                 {card.card_type === "Modern" && (
-                  <div>
-                    <ModernCard me={me} card={card} idx={idx} />
-                  </div>
+                  <ModernCard
+                    me={me}
+                    card={card}
+                    idx={idx}
+                    onEdit={() => {
+                      setEditCard(card);
+                      setShowEditForm(true);
+                    }}
+                  />
                 )}
                 {card.card_type === "Corporate" && (
-                  <div>
-                    <CorporateCard me={me} card={card} idx={idx} />
-                  </div>
+                  <CorporateCard
+                    me={me}
+                    card={card}
+                    idx={idx}
+                    onEdit={() => {
+                      setEditCard(card);
+                      setShowEditForm(true);
+                    }}
+                  />
                 )}
               </div>
             );
           })}
         </div>
       </div>
+      {/* Create Card Modal/Form */}
+      {showCreateForm && (
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Create Card</h2>
+            <ProfileFormForModal
+              onSuccess={() => {
+                setShowCreateForm(false);
+                refetch();
+              }}
+              mutation={createCardMutation}
+              me={me}
+              buttonText="Create"
+            />
+          </div>
+        </div>
+      )}
+      {/* Edit Card Modal/Form */}
+      {showEditForm && editCard && (
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Edit Card</h2>
+            <ProfileFormForModal
+              onSuccess={() => {
+                setShowEditForm(false);
+                setEditCard(null);
+                refetch();
+              }}
+              mutation={updateCardMutation}
+              me={me}
+              initialValues={editCard}
+              buttonText="Save"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
