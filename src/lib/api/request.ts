@@ -7,7 +7,7 @@ import { useAuthStore } from "@/app/store/auth-store";
 // export const injectStore = (_store: Store) => {};
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:7000/api/v1", // Replace with your API base URL
+  baseURL: "http://localhost:8000/api/v1", // Replace with your API base URL
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

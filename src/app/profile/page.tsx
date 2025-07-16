@@ -1,158 +1,176 @@
-'use client';
+"use client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { FormValues } from "@/components/update-user-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { Mail, User, Edit3 } from "lucide-react";
+import { userRequest } from "@/lib/api/user-api";
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { CardItem, UserData } from "@/app/store/types/user-type";
+import ModernCard from "@/components/modern-card";
+import MinimalCard from "@/components/minimal-card";
+import CorporateCard from "@/components/corporate-card";
+import Link from "next/link";
+import UpdateUserDialog from "@/components/update-user-dialog";
+import { useState } from "react";
 
-// Static user data
-const userData = {
-  id: '1',
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'john.doe@example.com',
-  avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-  hasCard: false,
-  cardUrl: null
-};
+export default function Component() {
+  const [open, setOpen] = useState(false);
+  const { GET_ME } = userRequest();
+  const {
+    data: me,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["me"],
+    queryFn: async () => GET_ME(),
+  });
 
-export default function Profile() {
-  const router = useRouter();
-  const [user] = useState(userData);
+  if (isLoading) {
+    return (
+      <div className="flex flex-col space-y-3">
+        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  } else if (isError) {
+    return "error";
+  }
 
-  const handleLogout = () => {
-    router.push('/');
+  const handleSave = (data: FormValues) => {
+    console.log("Updated user data:", data);
+    // Optional: Make API request to update user
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                </svg>
+    <div className="min-h-screen  bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="p-4 flex items-center justify-center">
+        <UpdateUserDialog
+          user={me?.data as UserData}
+          onSave={handleSave}
+          open={open}
+          setOpen={setOpen}
+          // refetchUser={refetch}
+        />
+        <div className="w-full max-w-md mx-auto overflow-hidden shadow-xl border-0">
+          {/* Header Background */}
+          <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
+            <div className="absolute inset-0 bg-black/10"></div>
+          </div>
+
+          <div className="relative px-6 pb-6">
+            {/* Avatar */}
+            <div className="flex justify-center -mt-16 mb-4">
+              <div className="relative">
+                <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                  <AvatarImage src={me?.data?.avatar} alt="Sarah Johnson" />
+                  <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                    {me?.data?.user_name}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full"></div>
               </div>
-              <span className="font-semibold text-gray-900">Digital ID Card</span>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
+            </div>
+
+            {/* User Info */}
+            <div className="text-center space-y-4">
+              {/* Full Name */}
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                  {me?.data.full_name}
+                </h1>
+                <Badge variant="secondary" className="text-xs font-medium">
+                  Premium Member
+                </Badge>
+              </div>
+
+              {/* Username */}
+              <div className="flex items-center justify-center gap-2 text-gray-600">
+                <User className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  @{me?.data?.user_name}
+                </span>
+              </div>
+
+              {/* Email */}
+              <div className="flex items-center justify-center gap-2 text-gray-600">
+                <Mail className="w-4 h-4" />
+                <span className="text-sm">{me?.data?.email}</span>
+              </div>
+
+              {/* Stats */}
+              <div className="flex justify-center gap-6 py-4 border-t border-gray-100">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-gray-900">127</div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide">
+                    Posts
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-gray-900">2.4K</div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide">
+                    Followers
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-gray-900">891</div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide">
+                    Following
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 space-x-1 gap-3">
+                <Button
+                  onClick={() => setOpen(true)}
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                >
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </Button>
+                <Link href="/create-card">
+                  <Button className="w-full" variant="outline" size="icon">
+                    Create Card
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Profile Header */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-          <div className="flex items-center space-x-4">
-            <img
-              src={user.avatar}
-              alt={`${user.firstName} ${user.lastName}`}
-              className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
-            />
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">
-                {user.firstName} {user.lastName}
-              </h1>
-              <p className="text-gray-600">{user.email}</p>
-              <div className="flex items-center mt-2">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  user.hasCard 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {user.hasCard ? 'Card Created' : 'No Card Yet'}
-                </span>
+      {/* Show Name Card  */}
+      <div className="w-full max-w-md mx-auto p-4">
+        <div className="grid grid-cols-1 gap-6">
+          {me?.data?.idCard?.map((card: CardItem, idx: number) => {
+            return (
+              <div key={idx}>
+                {card.card_type === "Minimal" && (
+                  <div>
+                    <MinimalCard me={me} card={card} idx={idx} />
+                  </div>
+                )}
+                {card.card_type === "Modern" && (
+                  <div>
+                    <ModernCard me={me} card={card} idx={idx} />
+                  </div>
+                )}
+                {card.card_type === "Corporate" && (
+                  <div>
+                    <CorporateCard me={me} card={card} idx={idx} />
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {/* Edit Profile Card */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Edit Profile</h2>
-            </div>
-            <p className="text-gray-600 mb-4">
-              Update your personal information and preferences
-            </p>
-            <Link
-              href="/profile/edit"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Edit Profile
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-
-          {/* Create Card Card */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                </svg>
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Digital ID Card</h2>
-            </div>
-            <p className="text-gray-600 mb-4">
-              {user.hasCard 
-                ? 'View and manage your digital ID card' 
-                : 'Create your professional digital ID card'
-              }
-            </p>
-            <Link
-              href={user.hasCard ? `/card/${user.id}` : '/card/create'}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              {user.hasCard ? 'View Card' : 'Create Card'}
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">1</div>
-              <div className="text-sm text-gray-600">Cards Created</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">0</div>
-              <div className="text-sm text-gray-600">Views</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">0</div>
-              <div className="text-sm text-gray-600">Shares</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">0</div>
-              <div className="text-sm text-gray-600">Downloads</div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
-} 
+}
