@@ -24,8 +24,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 
 import { UserData } from "@/app/store/types/user-type";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { _envCons } from "@/app/constants";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { _envCons } from "@/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userRequest } from "@/lib/api/user-api";
 
@@ -97,10 +97,13 @@ Props) {
         setIsSubmitting(true);
         const formData = new FormData();
         formData.append("image", avatarFile);
-        const res = await fetch(`http://localhost:8000/api/v1/upload/upload-image`, {
-          method: "POST",
-          body: formData,
-        });
+        const res = await fetch(
+          `http://localhost:8000/api/v1/upload/upload-image`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
         const uploadData = await res.json();
         avatarUrl = uploadData.url;
       } catch (error) {
