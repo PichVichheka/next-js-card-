@@ -97,7 +97,7 @@ Props) {
         setIsSubmitting(true);
         const formData = new FormData();
         formData.append("image", avatarFile);
-        const res = await fetch(`${_envCons.baseUrl}/upload/upload-image`, {
+        const res = await fetch(`http://localhost:8000/api/v1/upload/upload-image`, {
           method: "POST",
           body: formData,
         });
