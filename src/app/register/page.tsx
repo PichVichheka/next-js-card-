@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { AuthRegisterType } from "@/app/store/types/auth-typs";
 import { authRequest } from "@/lib/api/auth-api";
+import { useRouter } from "next/navigation";
 const RegisterSchema = z.object({
   user_name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -33,6 +34,7 @@ const RegisterSchema = z.object({
 });
 
 const Register = () => {
+  const router = useRouter();
   const { AUTH_REGISTER } = authRequest();
   const { device, fetchDeviceInfo } = useDeviceStore();
   console.log(device);
@@ -54,12 +56,12 @@ const Register = () => {
     },
   });
 
-    useEffect(() => {
+  useEffect(() => {
     fetchDeviceInfo();
   }, [fetchDeviceInfo]);
 
   function onSubmit(data: z.infer<typeof RegisterSchema>) {
-    console.log(device,"-----device------")
+    console.log(device, "-----device------");
     mutate({
       ...data,
       device_name: device?.device_name,
@@ -68,8 +70,8 @@ const Register = () => {
       browser: device?.browser,
       ip_address: device?.ip_address,
     });
+    router.push("/profile");
   }
-
 
   return (
     <div className="mx-auto w-full max-w-md shadow-lg rounded-2xl p-4 mt-12">
