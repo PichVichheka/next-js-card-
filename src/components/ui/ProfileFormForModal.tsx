@@ -92,6 +92,13 @@ export default function ProfileFormForModal({
     return allowedTypes.includes(file.type) && file.size <= maxSize;
   };
 
+  const handleCancel = () => {
+    reset();
+    setSocialIcons({});
+    setIconPreviews({});
+    setIsSubmitting(false);
+    onSuccess();
+  };
   const onSubmit = async (values: ProfileFormType) => {
     setIsSubmitting(true);
     const updatedSocial = await Promise.all(
@@ -113,6 +120,7 @@ export default function ProfileFormForModal({
         };
       })
     );
+
     const finalPayload = {
       ...values,
       email: me?.data?.email,
@@ -322,7 +330,7 @@ export default function ProfileFormForModal({
                         ) : (
                           <Avatar>
                             <AvatarImage
-                              src="https://github.com/evilrabbit.png"
+                              src="https://i.pinimg.com/736x/5c/6c/1c/5c6c1c7ad77e9ae20d997f89ba0e80db.jpg"
                               alt="@icon"
                             />
                             <AvatarFallback>IC</AvatarFallback>
@@ -413,6 +421,21 @@ export default function ProfileFormForModal({
               <Plus className="w-4 h-4 mr-2" /> Add Social Link
             </Button>
           </div>
+          <Button
+            className="w-full py-2.5 text-center me-2 mb-2"
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
+          {/* <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancel}
+            className="text-gray-900 bg-gradient-to-r w-full from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+          >
+            Cancel
+          </Button> */}
+
           <Button
             type="submit"
             className="w-full"
