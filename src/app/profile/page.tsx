@@ -23,6 +23,7 @@ import ProfileFormForModal from "@/components/ui/ProfileFormForModal";
 
 import { userRequest } from "@/lib/api/user-api";
 import { cardRequest } from "@/lib/api/card-api";
+import { toast } from "sonner";
 import type { FormValues } from "@/components/update-user-dialog";
 
 export default function Component() {
@@ -34,8 +35,7 @@ export default function Component() {
   const [editCard, setEditCard] = useState<CardItem | null>(null);
 
   const { GET_ME, UPDATE_USER } = userRequest();
-  const { CREATE_CARD, UPDATE_CARD } = cardRequest();
-
+  const { CREATE_CARD, UPDATE_CARD, DELETE_CARD } = cardRequest();
   const createCardMutation = useMutation({
     mutationFn: CREATE_CARD,
   });
@@ -43,7 +43,16 @@ export default function Component() {
   const updateCardMutation = useMutation({
     mutationFn: (payload) => UPDATE_CARD(editCard?.id ?? "", payload),
   });
-
+  const deleteCardMutation = useMutation({
+    mutationFn: (cardId: string) => DELETE_CARD(cardId),
+    onSuccess: () => {
+      toast.success("Card deleted successfully");
+      refetch(); // Refresh data after delete
+    },
+    onError: () => {
+      toast.error("Failed to delete card");
+    },
+  });
   const {
     data: me,
     isLoading,
@@ -125,7 +134,7 @@ export default function Component() {
             <div className="text-center space-y-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                  {me?.data.full_name}
+                  {me?.data?.full_name}
                 </h1>
                 <Badge variant="secondary" className="text-xs font-medium">
                   Premium Member
@@ -144,7 +153,7 @@ export default function Component() {
                 <span className="text-sm">{me?.data?.email}</span>
               </div>
 
-              <div className="flex justify-center gap-6 py-4 border-t border-gray-100">
+              {/* <div className="flex justify-center gap-6 py-4 border-t border-gray-100">
                 <div className="text-center">
                   <div className="text-xl font-bold text-gray-900">127</div>
                   <div className="text-xs text-gray-500 uppercase tracking-wide">
@@ -163,7 +172,7 @@ export default function Component() {
                     Following
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Action Buttons */}
               <div className="space-y-2">
@@ -193,43 +202,57 @@ export default function Component() {
       {/* Show Name Cards */}
       <div className="w-full max-w-md mx-auto p-4">
         <div className="grid grid-cols-1 gap-6">
-          {me?.data?.idCard?.map((card: CardItem, idx: number) => (
-            <div key={idx}>
-              {card.card_type === "Minimal" && (
-                <MinimalCard
-                  me={me}
-                  card={card}
-                  idx={idx}
-                  onEdit={() => {
-                    setEditCard(card);
-                    setShowEditForm(true);
-                  }}
-                />
-              )}
-              {card.card_type === "Modern" && (
-                <ModernCard
-                  me={me}
-                  card={card}
-                  idx={idx}
-                  onEdit={() => {
-                    setEditCard(card);
-                    setShowEditForm(true);
-                  }}
-                />
-              )}
-              {card.card_type === "Corporate" && (
-                <CorporateCard
-                  me={me}
-                  card={card}
-                  idx={idx}
-                  onEdit={() => {
-                    setEditCard(card);
-                    setShowEditForm(true);
-                  }}
-                />
-              )}
-            </div>
-          ))}
+          {me?.data?.idCard?.map((card: CardItem, idx: number) => {
+            return (
+              <div key={idx}>
+                {card.card_type === "Minimal" && (
+                  <MinimalCard
+                    me={me}
+                    card={card}
+                    idx={idx}
+                    onEdit={() => {
+                      setEditCard(card);
+                      setShowEditForm(true);
+                    }}
+                    onDelete={() => {
+                      console.log("Delete card", card.id);
+                      deleteCardMutation.mutate(card.id);
+                    }}
+                  />
+                )}
+                {card.card_type === "Modern" && (
+                  <ModernCard
+                    me={me}
+                    card={card}
+                    idx={idx}
+                    onEdit={() => {
+                      setEditCard(card);
+                      setShowEditForm(true);
+                    }}
+                    onDelete={() => {
+                      console.log("Delete card", card.id);
+                      deleteCardMutation.mutate(card.id);
+                    }}
+                  />
+                )}
+                {card.card_type === "Corporate" && (
+                  <CorporateCard
+                    me={me}
+                    card={card}
+                    idx={idx}
+                    onEdit={() => {
+                      setEditCard(card);
+                      setShowEditForm(true);
+                    }}
+                    onDelete={() => {
+                      console.log("Delete card", card.id);
+                      deleteCardMutation.mutate(card.id);
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 

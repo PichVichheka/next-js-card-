@@ -17,8 +17,16 @@ export const cardRequest = () => {
     });
   };
 
+  const DELETE_CARD = async (cardId: string) => {
+    return await axiosInstance({
+      url: `/card/delete-card/${cardId}`,
+      method: "DELETE",
+    });
+  };
+
   return {
     CREATE_CARD,
     UPDATE_CARD,
+    DELETE_CARD,
   };
 };

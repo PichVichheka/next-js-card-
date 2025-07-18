@@ -217,6 +217,16 @@
 
 // components/profile-card/modern-card.tsx
 import React from "react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -227,27 +237,50 @@ import {
   Download,
   Instagram,
   Pencil,
+  Trash2 as Delete,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardItem } from "@/app/store/types/card-type";
 import { IUser } from "@/app/store/types/user-type";
-import Link from "next/link";
 
 const ModernCard = ({
   me,
   card,
   idx,
   onEdit,
+  onDelete,
 }: {
   me: IUser;
   card: CardItem;
   idx: number;
   onEdit: () => void;
+  onDelete: () => void;
 }) => {
   return (
     <Card className="relative max-w-sm mx-auto bg-gradient-to-b from-indigo-700 via-purple-700 to-fuchsia-700 text-white rounded-3xl shadow-2xl">
-      {/* Edit Button */}
-      {/* <Link href={`/update-card/${card.id}`}> */}
+      <Dialog>
+        <DialogTrigger asChild className="backdrop-blur-sm">
+          <Button className="absolute top-2 right-12 bg-purple-400 text-red-800 border border-purple-600 shadow-lg hover:bg-purple-700">
+            <Delete className="w-5 h-5" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Are you sure you want to delete this card?
+            </DialogTitle>
+            <DialogDescription>This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={onDelete} variant="destructive">
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Button
         variant="ghost"
         size="icon"
@@ -256,7 +289,7 @@ const ModernCard = ({
       >
         <Pencil className="w-5 h-5" />
       </Button>
-      {/* </Link> */}
+
       <CardContent className="p-6 space-y-6">
         <div className="flex flex-col items-center space-y-2">
           <Avatar className="w-24 h-24 border-4 border-white shadow-lg">

@@ -1,6 +1,24 @@
 import React from "react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Button } from "./ui/button";
-import { Download, Globe, Mail, MapPin, Pencil, Phone } from "lucide-react";
+import {
+  Download,
+  Globe,
+  Mail,
+  MapPin,
+  Pencil,
+  Phone,
+  Trash2 as Delete,
+} from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { CardItem, IUser } from "@/app/store/types/user-type";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -11,11 +29,13 @@ const MinimalCard = ({
   card,
   idx,
   onEdit,
+  onDelete,
 }: {
   me: IUser;
   card: CardItem;
   idx: number;
   onEdit: () => void;
+  onDelete: () => void;
 }) => {
   return (
     // <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-4">
@@ -24,6 +44,31 @@ const MinimalCard = ({
 
       <div key={idx}>
         <Card className="bg-white border-4 border-amber-600 shadow-xl relative">
+          <Dialog>
+            <DialogTrigger asChild className="backdrop-blur-sm">
+              <Button className="absolute top-2 right-12 bg-purple-400 text-red-800 border border-purple-600 shadow-lg hover:bg-purple-700">
+                <Delete className="w-5 h-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  Are you sure you want to delete this card?
+                </DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button onClick={onDelete} variant="destructive">
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           <Button
             variant="ghost"
             size="icon"

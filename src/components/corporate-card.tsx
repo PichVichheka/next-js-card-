@@ -1,3 +1,14 @@
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
+
 import { CardItem, IUser } from "@/app/store/types/user-type";
 import React from "react";
 import { Card, CardContent } from "./ui/card";
@@ -12,20 +23,24 @@ import {
   MapPin,
   Phone,
   Pencil,
+  Trash2 as Delete,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { on } from "events";
 
 const CorporateCard = ({
   me,
   card,
   idx,
   onEdit,
+  onDelete,
 }: {
   me: IUser;
   card: CardItem;
   idx: number;
   onEdit: () => void;
+  onDelete: () => void;
 }) => {
   return (
     <div>
@@ -35,6 +50,32 @@ const CorporateCard = ({
 
         <div key={idx}>
           <Card className="bg-gradient-to-br from-purple-800/90 to-pink-800/90 border-0 shadow-2xl backdrop-blur-sm">
+            <Dialog>
+              <DialogTrigger asChild className="backdrop-blur-sm">
+                <Button className="absolute top-2 right-12 bg-purple-400 text-red-800 border border-purple-600 shadow-lg hover:bg-purple-700">
+                  <Delete className="w-5 h-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    Are you sure you want to delete this card?
+                  </DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button onClick={onDelete} variant="destructive">
+                    Delete
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <Button
               variant="ghost"
               size="icon"
