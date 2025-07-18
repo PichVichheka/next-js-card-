@@ -12,11 +12,11 @@ import { CardItem, UserData } from "@/app/store/types/user-type";
 import ModernCard from "@/components/modern-card";
 import MinimalCard from "@/components/minimal-card";
 import CorporateCard from "@/components/corporate-card";
-import Link from "next/link";
 import UpdateUserDialog from "@/components/update-user-dialog";
 import { useState } from "react";
 import ProfileFormForModal from "@/components/ui/ProfileFormForModal";
 import { cardRequest } from "@/lib/api/card-api";
+import { toast } from "sonner";
 
 export default function Component() {
   const [open, setOpen] = useState(false);
@@ -24,12 +24,22 @@ export default function Component() {
   const [showEditForm, setShowEditForm] = useState(false);
   const [editCard, setEditCard] = useState<CardItem | null>(null);
   const { GET_ME, UPDATE_USER } = userRequest();
-  const { CREATE_CARD, UPDATE_CARD } = cardRequest();
+  const { CREATE_CARD, UPDATE_CARD, DELETE_CARD } = cardRequest();
   const createCardMutation = useMutation({
     mutationFn: CREATE_CARD,
   });
   const updateCardMutation = useMutation({
     mutationFn: (payload) => UPDATE_CARD(editCard?.id ?? "", payload),
+  });
+  const deleteCardMutation = useMutation({
+    mutationFn: (cardId: string) => DELETE_CARD(cardId),
+    onSuccess: () => {
+      toast.success("Card deleted successfully");
+      refetch(); // Refresh data after delete
+    },
+    onError: () => {
+      toast.error("Failed to delete card");
+    },
   });
   const {
     data: me,
@@ -79,7 +89,7 @@ export default function Component() {
         <div className="w-full max-w-md mx-auto overflow-hidden shadow-xl border-0">
           {/* Header Background */}
           <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
-            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute inset-0 bg-black/10 flex justify-end p-4 items-center space-x-4"></div>
           </div>
 
           <div className="relative px-6 pb-6">
@@ -101,7 +111,7 @@ export default function Component() {
               {/* Full Name */}
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                  {me?.data.full_name}
+                  {me?.data?.full_name}
                 </h1>
                 <Badge variant="secondary" className="text-xs font-medium">
                   Premium Member
@@ -181,6 +191,10 @@ export default function Component() {
                       setEditCard(card);
                       setShowEditForm(true);
                     }}
+                    onDelete={() => {
+                      console.log("Delete card", card.id);
+                      deleteCardMutation.mutate(card.id);
+                    }}
                   />
                 )}
                 {card.card_type === "Modern" && (
@@ -192,6 +206,10 @@ export default function Component() {
                       setEditCard(card);
                       setShowEditForm(true);
                     }}
+                    onDelete={() => {
+                      console.log("Delete card", card.id);
+                      deleteCardMutation.mutate(card.id);
+                    }}
                   />
                 )}
                 {card.card_type === "Corporate" && (
@@ -202,6 +220,10 @@ export default function Component() {
                     onEdit={() => {
                       setEditCard(card);
                       setShowEditForm(true);
+                    }}
+                    onDelete={() => {
+                      console.log("Delete card", card.id);
+                      deleteCardMutation.mutate(card.id);
                     }}
                   />
                 )}
