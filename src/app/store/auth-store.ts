@@ -9,9 +9,10 @@ const CookieName = {
 };
 
 interface AuthStore {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string | null;
+  refreshToken: string | null;
   setTokens: (accessToken: string, refreshToken: string) => void;
+  clearTokens: () => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -29,6 +30,14 @@ export const useAuthStore = create<AuthStore>()(
 
       false;
       ("accessToken");
+    },
+    clearTokens: () => {
+      cookies.remove(CookieName.ACCESS_TOKEN);
+      cookies.remove(CookieName.REFRESH_TOKEN);
+      set({
+        accessToken: null,
+        refreshToken: null,
+      });
     },
   }))
 );

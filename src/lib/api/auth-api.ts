@@ -17,8 +17,18 @@ export const authRequest = () => {
       data: payload,
     });
   };
+
+  const AUTH_LOGOUT = async (refreshToken: string) => {
+    return await axios({
+      url: "/auth/logout",
+      method: "POST",
+      data: { refreshToken },
+    });
+  };
+
   return {
     AUTH_LOGIN,
     AUTH_REGISTER,
+    AUTH_LOGOUT,
   };
 };

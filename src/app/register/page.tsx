@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useDeviceStore } from "@/app/store/device-store";
+import { useAuthStore } from "@/app/store/auth-store";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,6 +37,7 @@ const RegisterSchema = z.object({
 const Register = () => {
   const router = useRouter();
   const { AUTH_REGISTER } = authRequest();
+  const setTokens = useAuthStore((s) => s.setTokens);
   const { device, fetchDeviceInfo } = useDeviceStore();
   console.log(device);
   const form = useForm<z.infer<typeof RegisterSchema>>({
@@ -52,7 +54,11 @@ const Register = () => {
     mutationKey: ["register"],
     mutationFn: (payload: AuthRegisterType) => AUTH_REGISTER(payload),
     onSuccess: (data) => {
-      console.log("response data", data);
+      const { accessToken, refreshToken } = data.data;
+      if (accessToken && refreshToken) {
+        setTokens(accessToken, refreshToken);
+        router.push("/profile");
+      }
     },
   });
 
@@ -70,7 +76,6 @@ const Register = () => {
       browser: device?.browser,
       ip_address: device?.ip_address,
     });
-    router.push("/profile");
   }
 
   return (

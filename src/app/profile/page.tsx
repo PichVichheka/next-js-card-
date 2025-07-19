@@ -6,9 +6,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import cookies from "js-cookie";
 import Link from "next/link";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Mail, User, Edit3, LogOut } from "lucide-react";
-
+import { useAuthStore } from "@/app/store/auth-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,12 +23,14 @@ import ProfileFormForModal from "@/components/ui/ProfileFormForModal";
 
 import { userRequest } from "@/lib/api/user-api";
 import { cardRequest } from "@/lib/api/card-api";
+import { authRequest } from "@/lib/api/auth-api";
 import { toast } from "sonner";
 import type { FormValues } from "@/components/update-user-dialog";
 
 export default function Component() {
   const router = useRouter();
-
+  const queryClient = useQueryClient();
+  const { clearTokens, refreshToken } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -36,18 +38,45 @@ export default function Component() {
 
   const { GET_ME, UPDATE_USER } = userRequest();
   const { CREATE_CARD, UPDATE_CARD, DELETE_CARD } = cardRequest();
+  const { AUTH_LOGOUT } = authRequest();
   const createCardMutation = useMutation({
     mutationFn: CREATE_CARD,
+    onSuccess: () => {
+      toast.success("Card created successfully");
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+    onError: () => {
+      toast.error("Failed to create card");
+    },
   });
 
   const updateCardMutation = useMutation({
     mutationFn: (payload) => UPDATE_CARD(editCard?.id ?? "", payload),
+    onSuccess: () => {
+      toast.success("Card updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+    onError: () => {
+      toast.error("Failed to update card");
+    },
   });
   const deleteCardMutation = useMutation({
     mutationFn: (cardId: string) => DELETE_CARD(cardId),
-    onSuccess: () => {
+    onSuccess: (data, cardId) => {
       toast.success("Card deleted successfully");
-      refetch(); // Refresh data after delete
+      queryClient.setQueryData(["me"], (oldData: any) => {
+        if (!oldData) return oldData;
+        const newIdCards = oldData.data.idCard.filter(
+          (card: CardItem) => card.id !== cardId
+        );
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            idCard: newIdCards,
+          },
+        };
+      });
     },
     onError: () => {
       toast.error("Failed to delete card");
@@ -63,9 +92,15 @@ export default function Component() {
     queryFn: async () => GET_ME(),
   });
 
-  const handleLogout = () => {
-    cookies.remove("token"); // Remove auth token cookie
-    router.push("/login"); // Redirect to login page
+  const handleLogout = async () => {
+    try {
+      await AUTH_LOGOUT(refreshToken as string);
+      clearTokens();
+      router.push("/login");
+      queryClient.clear();
+    } catch (error) {
+      toast.error("Failed to logout");
+    }
   };
 
   const handleSave = async (data: FormValues) => {
@@ -270,6 +305,13 @@ export default function Component() {
               me={me}
               buttonText="Create"
             />
+            <Button
+              variant="outline"
+              className="w-full mt-2"
+              onClick={() => setShowCreateForm(false)}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       )}
@@ -290,6 +332,16 @@ export default function Component() {
               initialValues={editCard}
               buttonText="Save"
             />
+            <Button
+              variant="outline"
+              className="w-full mt-2"
+              onClick={() => {
+                setShowEditForm(false);
+                setEditCard(null);
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       )}
