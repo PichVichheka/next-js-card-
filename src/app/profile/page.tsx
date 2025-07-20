@@ -126,6 +126,8 @@ export default function Component() {
   } else if (isError) {
     return "error";
   }
+  console.log("COVER IMAGE:", me?.data?.cover_image);
+  console.log("FULL ME:", JSON.stringify(me, null, 2));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -138,13 +140,19 @@ export default function Component() {
         />
         <div className="w-full max-w-md mx-auto overflow-hidden shadow-xl border-0">
           {/* Header Background */}
-          <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
-            <div className="absolute inset-0 bg-black/10">
-              {/* Logout Button */}
+          <div className="h-64 relative">
+            {me?.data?.cover_image && (
+              <img
+                src={me.data.cover_image}
+                alt="Cover Image"
+                className="w-full h-40 object-cover"
+              />
+            )}
+            <div className="absolute inset-0 bg-black/20 flex justify-end items-start p-4">
               <Button
                 onClick={handleLogout}
                 variant="ghost"
-                className="absolute top-4 right-4 w-10 h-10 "
+                className="text-white hover:bg-white/20"
               >
                 <LogOut className="w-6 h-6" />
               </Button>

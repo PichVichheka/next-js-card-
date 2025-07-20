@@ -11,6 +11,7 @@ export interface UserData {
   email: string;
   password: string;
   avatar?: string;
+  cover_image?: string;
   is_deleted: boolean;
   is_active: boolean;
   roles: string[];

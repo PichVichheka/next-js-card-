@@ -34,6 +34,7 @@ const formSchema = z.object({
   email: z.string().email("Invalid email"),
   user_name: z.string().min(1, "Username is required"),
   avatar: z.string().optional(), // Changed from required to optional
+  cover_image: z.string().optional(),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -57,6 +58,10 @@ Props) {
   const { UPDATE_USER } = userRequest();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
+    null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
@@ -66,6 +71,7 @@ Props) {
       email: user?.email || "",
       user_name: user?.user_name || "",
       avatar: user?.avatar || "",
+      cover_image: user?.cover_image || "",
     },
   });
 
@@ -76,20 +82,25 @@ Props) {
       email: user?.email || "",
       user_name: user?.user_name || "",
       avatar: user?.avatar || "",
+      cover_image: user?.cover_image || "",
     };
 
     form.reset(defaultValues);
     setAvatarFile(null);
     setAvatarPreview(user?.avatar || null);
+    setCoverImageFile(null);
+    setCoverImagePreview(user?.cover_image || null);
 
     // Set the avatar field value in the form
     form.setValue("avatar", user?.avatar || "");
+    form.setValue("cover_image", user?.cover_image || "");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const onSubmit = async (data: FormValues) => {
     let avatarUrl = data.avatar || ""; // Use form data avatar as fallback
+    let coverImageUrl = data.cover_image || ""; // Use form data cover_image as fallback
 
     // Upload new avatar only if new file is selected
     if (avatarFile) {
@@ -97,10 +108,13 @@ Props) {
         setIsSubmitting(true);
         const formData = new FormData();
         formData.append("image", avatarFile);
-        const res = await fetch(`http://localhost:8000/api/v1/upload/upload-image`, {
-          method: "POST",
-          body: formData,
-        });
+        const res = await fetch(
+          `http://localhost:8000/api/v1/upload/upload-image`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
         const uploadData = await res.json();
         avatarUrl = uploadData.url;
       } catch (error) {
@@ -113,9 +127,35 @@ Props) {
       avatarUrl = avatarPreview;
     }
 
+    // Upload new cover image only if new file is selected
+    if (coverImageFile) {
+      try {
+        setIsSubmitting(true);
+        const formData = new FormData();
+        formData.append("image", coverImageFile);
+        const res = await fetch(
+          `http://localhost:8000/api/v1/upload/upload-image`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        const uploadData = await res.json();
+        coverImageUrl = uploadData.url;
+      } catch (error) {
+        console.error("Error uploading cover image:", error);
+        // Continue with existing cover image if upload fails
+        coverImageUrl = coverImagePreview || data.cover_image || "";
+      }
+    } else if (coverImagePreview) {
+      // If no new file but preview exists, use it
+      coverImageUrl = coverImagePreview;
+    }
+
     const finalPayload = {
       ...data,
       avatar: avatarUrl,
+      cover_image: coverImageUrl,
     };
 
     console.log("Final payload:", finalPayload);
@@ -131,6 +171,8 @@ Props) {
       form.reset();
       setAvatarFile(null);
       setAvatarPreview(null);
+      setCoverImageFile(null);
+      setCoverImagePreview(null);
       setOpen(false);
       queryClient.invalidateQueries({ queryKey: ["me"] });
       //   refetchUser();
@@ -166,6 +208,35 @@ Props) {
     // Reset file input
     const fileInput = document.getElementById(
       "avatarUpload"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
+
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && isValidImage(file)) {
+      setCoverImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setCoverImagePreview(previewUrl);
+      // Update form value
+      form.setValue("cover_image", previewUrl);
+    } else if (file) {
+      alert("Cover image must be an image under 2MB");
+      // Reset the input
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveCoverImage = () => {
+    setCoverImageFile(null);
+    setCoverImagePreview(null);
+    // Update form value
+    form.setValue("cover_image", "");
+    // Reset file input
+    const fileInput = document.getElementById(
+      "coverImageUpload"
     ) as HTMLInputElement;
     if (fileInput) {
       fileInput.value = "";
@@ -228,10 +299,68 @@ Props) {
               </Label>
             </div>
 
+            {/* Cover Image Upload */}
+            <div className="flex flex-col items-center space-y-2">
+              <label
+                htmlFor="coverImageUpload"
+                className="cursor-pointer relative group w-full"
+              >
+                <div className="w-full h-32 rounded-lg border overflow-hidden bg-gray-100">
+                  {coverImagePreview ? (
+                    <img
+                      src={coverImagePreview}
+                      alt="Cover Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      + Cover Image
+                    </div>
+                  )}
+                </div>
+                {coverImagePreview && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoverImage}
+                    className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-5 h-5 flex items-center justify-center text-xs shadow border"
+                  >
+                    ✕
+                  </button>
+                )}
+              </label>
+              <Input
+                id="coverImageUpload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleCoverImageChange}
+              />
+              <Label
+                className="text-sm font-medium cursor-pointer text-gray-600"
+                htmlFor="coverImageUpload"
+              >
+                Click to change cover image
+              </Label>
+            </div>
+
             {/* Avatar Form Field - This ensures avatar is part of the form */}
             <FormField
               control={form.control}
               name="avatar"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                    <Input type="hidden" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Cover Image Form Field - This ensures cover_image is part of the form */}
+            <FormField
+              control={form.control}
+              name="cover_image"
               render={({ field }) => (
                 <FormItem className="hidden">
                   <FormControl>
@@ -302,8 +431,8 @@ Props) {
                 disabled={isSubmitting || updateUserProfileMutation.isPending}
               >
                 {isSubmitting || updateUserProfileMutation.isPending
-                  ? "Creating..."
-                  : "Create"}
+                  ? "Updating..."
+                  : "Update"}
               </Button>
             </div>
           </form>
