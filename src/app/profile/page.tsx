@@ -293,6 +293,27 @@ export default function Component() {
           </div>
         </div>
       )}
+
+      {/* Footer Navigation */}
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t z-50 pt-2">
+        <div className="w-full max-w-md mx-auto grid grid-cols-3 divide-x gap-5">
+          <Link href="/corporate-card">
+            <button className="w-full py-3 text-sm text-gray-700 hover:bg-gray-100">
+              Conporate
+            </button>
+          </Link>
+          <Link href="/minimal-card">
+            <button className="w-full py-3 text-sm text-gray-700 hover:bg-gray-100">
+              Minimal
+            </button>
+          </Link>
+          <Link href="/modern-card">
+            <button className="w-full py-3 text-sm text-gray-700 hover:bg-gray-100">
+              Modern
+            </button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

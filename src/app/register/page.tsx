@@ -70,7 +70,7 @@ const Register = () => {
       browser: device?.browser,
       ip_address: device?.ip_address,
     });
-    router.push("/profile");
+    router.push("/");
   }
 
   return (
