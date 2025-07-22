@@ -57,7 +57,7 @@ const Register = () => {
       const { accessToken, refreshToken } = data.data;
       if (accessToken && refreshToken) {
         setTokens(accessToken, refreshToken);
-        router.push("/profile");
+        router.push("/");
       }
     },
   });
@@ -76,6 +76,7 @@ const Register = () => {
       browser: device?.browser,
       ip_address: device?.ip_address,
     });
+    router.push("/");
   }
 
   return (

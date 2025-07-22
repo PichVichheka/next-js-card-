@@ -245,17 +245,17 @@ Props) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md my-5">
         <DialogHeader>
           <DialogTitle>Update Profile</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 pt-4"
+            className="space-y-4 pt-2"
           >
             {/* Avatar Upload */}
-            <div className="flex flex-col items-center space-y-2">
+            <div className="flex flex-col items-center space-y-1">
               <label
                 htmlFor="avatarUpload"
                 className="cursor-pointer relative group"
@@ -300,7 +300,7 @@ Props) {
             </div>
 
             {/* Cover Image Upload */}
-            <div className="flex flex-col items-center space-y-2">
+            <div className="flex flex-col items-center space-y-1">
               <label
                 htmlFor="coverImageUpload"
                 className="cursor-pointer relative group w-full"
@@ -417,14 +417,7 @@ Props) {
             />
 
             {/* Actions */}
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setOpen(false)}
-              >
-                Cancel
-              </Button>
+            <div className="flex justify-end gap-2 pt-2">
               <Button
                 type="submit"
                 className="w-full"

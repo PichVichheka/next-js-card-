@@ -421,12 +421,12 @@ export default function ProfileFormForModal({
               <Plus className="w-4 h-4 mr-2" /> Add Social Link
             </Button>
           </div>
-          <Button
+          {/* <Button
             className="w-full py-2.5 text-center me-2 mb-2"
             onClick={handleCancel}
           >
             Cancel
-          </Button>
+          </Button> */}
           {/* <Button
             type="button"
             variant="outline"

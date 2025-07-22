@@ -57,7 +57,7 @@ const Login = () => {
 
         // Redirect based on role
         if (roles.includes("user")) {
-          navigate.push("/profile");
+          navigate.push("/");
         } else {
           navigate.push("/login");
         }
@@ -120,7 +120,7 @@ const Login = () => {
           {/* Footer */}
           <p className="text-sm text-center text-gray-800 mt-4">
             Don’t have an account?{" "}
-            <a href="#" className="text-blue-600 hover:underline">
+            <a href="/register" className="text-blue-600 hover:underline">
               Create Account
             </a>
           </p>
