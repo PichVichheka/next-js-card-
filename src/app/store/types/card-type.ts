@@ -3,6 +3,9 @@ import { CardItem, IUser } from "./user-type";
 export interface ICardResponse {
   message: string;
   card: {
+    filter(arg0: (card: any) => boolean): unknown;
+    forEach(arg0: (card: any) => Set<string>): unknown;
+    length: any;
     web_site: string | undefined;
     id: string;
     gender: GenderType;

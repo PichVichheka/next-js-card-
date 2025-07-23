@@ -1,14 +1,16 @@
 "use client";
 import { useState, useMemo } from "react";
-import { ICard, CardResponse } from "@/types/card-type";
-// import MinimalCardService from "./minimal-card";
-// import ModernCardService from "./modern-card";
-import CorporateCardService from "./corporate-card";
-import ModernCardServerSide from "./modern-card-serverside";
-import MinimalCardServerSide from "./minimal-card-serverside";
-
+import type {
+  ICard,
+  ICardResponse,
+  GenderType,
+  CardType,
+} from "@/app/store/types/card-type";
+import MinimalCard from "../minimal-card";
+import ModernCard from "../modern-card";
+import CorporateCard from "../corporate-card";
 type Props = {
-  cards: CardResponse;
+  cards: ICardResponse;
 };
 
 const PublicCardServerSide = ({ cards }: Props) => {
@@ -30,32 +32,55 @@ const PublicCardServerSide = ({ cards }: Props) => {
   );
 
   const renderCardComponent = (card: ICard, idx: number) => {
+    // Construct IUser and CardItem objects to match expected types
+    const userData = {
+      message: "",
+      data: {
+        ...card.user,
+        idCard: [],
+      },
+    };
+    const cardItem = {
+      ...card,
+      user: userData,
+      gender: card.gender as GenderType,
+      card_type: card.card_type as CardType,
+      qr_url: card.qr_url === null ? undefined : card.qr_url,
+      qr_code: card.qr_code === null ? undefined : card.qr_code,
+      theme_color: card.theme_color === null ? undefined : card.theme_color,
+    };
     switch (card.card_type) {
       case "Minimal":
         return (
-          <MinimalCardServerSide
+          <MinimalCard
             key={idx}
-            me={card.user}
-            card={card}
+            me={userData}
+            card={cardItem}
             idx={idx}
+            onEdit={() => {}}
+            onDelete={() => {}}
           />
         );
       case "Modern":
         return (
-          <ModernCardServerSide
+          <ModernCard
             key={idx}
-            me={card.user}
-            card={card}
+            me={userData}
+            card={cardItem}
             idx={idx}
+            onEdit={() => {}}
+            onDelete={() => {}}
           />
         );
       case "Corporate":
         return (
-          <CorporateCardService
+          <CorporateCard
             key={idx}
-            me={card.user}
-            card={card}
+            me={userData}
+            card={cardItem}
             idx={idx}
+            onEdit={() => {}}
+            onDelete={() => {}}
           />
         );
       default:
@@ -78,8 +103,8 @@ const PublicCardServerSide = ({ cards }: Props) => {
     <div className="relative min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Card list scrollable with padding to avoid overlap */}
       <div className="overflow-y-auto pb-28 px-3 pt-4 max-w-md mx-auto">
-        {filteredCards.length > 0 ? (
-          filteredCards.map((card, idx) => (
+        {Array.isArray(filteredCards) && filteredCards.length > 0 ? (
+          filteredCards.map((card: ICard, idx: number) => (
             <div
               key={idx}
               className="mb-6 transition-all duration-300 ease-in-out"
