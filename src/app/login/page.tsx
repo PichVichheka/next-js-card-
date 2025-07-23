@@ -12,13 +12,6 @@ import type { AuthLoginType } from "@/app/store/types/auth-typs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import {
   Form,
   FormField,
   FormItem,
@@ -26,8 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { LogIn } from "lucide-react";
-import Link from "next/link";
 
 const loginSchema = z.object({
   user_name: z.string().min(2, "Username is required"),
@@ -55,7 +46,6 @@ const Login = () => {
       if (accessToken && refreshToken) {
         setTokens(accessToken, refreshToken, roles);
 
-        // Redirect based on role
         if (roles.includes("user")) {
           navigate.push("/");
         } else {
@@ -67,60 +57,68 @@ const Login = () => {
       console.error("Login error:", err);
     },
   });
+
   const onSubmit = (data: z.infer<typeof loginSchema>) => {
     loginMutation.mutate(data);
   };
 
   return (
-    <div className="mx-auto w-full max-w-md shadow-lg rounded-2xl p-4 mt-12 bg-gradient-to-br from-blue-100 via-purple-300 to-pink-300">
+    <div className="mx-auto w-full max-w-md bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl shadow-lg p-8 mt-12">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Heading */}
-          <h1 className="text-2xl font-bold text-center text-black">
-            Welcome Back
+          {/* Header */}
+          <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">
+            Login
           </h1>
-          <p className="text-sm text-center text-gray-800 mb-6">
-            Sign in to access your digital ID card
-          </p>
+
           <FormField
             control={form.control}
             name="user_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="username" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="password" {...field} />
+                  <Input
+                    placeholder="Enter your username"
+                    {...field}
+                    className="border border-blue-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Submit Button */}
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-blue-700 font-semibold">Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Enter your password"
+                    {...field}
+                    className="border border-blue-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button
             type="submit"
-            className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-md shadow-md hover:brightness-110 transition-all"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors"
             disabled={loginMutation.isPending}
           >
             {loginMutation.isPending ? "Signing In..." : "Sign In"}
           </Button>
-          {/* Footer */}
-          <p className="text-sm text-center text-gray-800 mt-4">
+
+          <p className="text-center text-blue-700 mt-4">
             Don’t have an account?{" "}
-            <a href="/register" className="text-blue-600 hover:underline">
+            <a href="/register" className="underline hover:text-blue-900">
               Create Account
             </a>
           </p>

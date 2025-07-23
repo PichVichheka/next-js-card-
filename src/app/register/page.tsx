@@ -19,6 +19,7 @@ import { useEffect } from "react";
 import { AuthRegisterType } from "@/app/store/types/auth-typs";
 import { authRequest } from "@/lib/api/auth-api";
 import { useRouter } from "next/navigation";
+
 const RegisterSchema = z.object({
   user_name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -27,7 +28,7 @@ const RegisterSchema = z.object({
     message: "Fullname must be at least 2 characters.",
   }),
   email: z.string().email({
-    message: "Fullname must be at least 2 characters.",
+    message: "Please enter a valid email.",
   }),
   password: z.string().min(2, {
     message: "Password must be at least 2 characters.",
@@ -39,7 +40,7 @@ const Register = () => {
   const { AUTH_REGISTER } = authRequest();
   const setTokens = useAuthStore((s) => s.setTokens);
   const { device, fetchDeviceInfo } = useDeviceStore();
-  console.log(device);
+
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -67,7 +68,6 @@ const Register = () => {
   }, [fetchDeviceInfo]);
 
   function onSubmit(data: z.infer<typeof RegisterSchema>) {
-    console.log(device, "-----device------");
     mutate({
       ...data,
       device_name: device?.device_name,
@@ -76,23 +76,29 @@ const Register = () => {
       browser: device?.browser,
       ip_address: device?.ip_address,
     });
-    router.push("/");
   }
 
   return (
-    <div className="mx-auto w-full max-w-md shadow-lg rounded-2xl p-4 mt-12">
+    <div className="mx-auto w-full max-w-md rounded-2xl p-8 mt-16 shadow-2xl border border-gray-200 bg-gradient-to-br from-white via-blue-50 to-blue-100">
+      <h2 className="text-3xl font-bold text-center text-blue-800 mb-6 drop-shadow-sm">
+        Create an Account
+      </h2>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
             control={form.control}
             name="user_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="username" {...field} />
+                  <Input
+                    placeholder="Enter your username"
+                    {...field}
+                    className="focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 placeholder-gray-400 border border-blue-200 rounded-lg shadow-sm"
+                  />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-red-500 text-sm" />
               </FormItem>
             )}
           />
@@ -101,11 +107,15 @@ const Register = () => {
             name="full_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Fullname</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="fullname" {...field} />
+                  <Input
+                    placeholder="Enter your full name"
+                    {...field}
+                    className="focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 placeholder-gray-400 border border-blue-200 rounded-lg shadow-sm"
+                  />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-red-500 text-sm" />
               </FormItem>
             )}
           />
@@ -114,11 +124,15 @@ const Register = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="email" {...field} />
+                  <Input
+                    placeholder="Enter your email"
+                    {...field}
+                    className="focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 placeholder-gray-400 border border-blue-200 rounded-lg shadow-sm"
+                  />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-red-500 text-sm" />
               </FormItem>
             )}
           />
@@ -127,20 +141,39 @@ const Register = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="password" {...field} />
+                  <Input
+                    type="password"
+                    placeholder="Enter your password"
+                    {...field}
+                    className="focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 placeholder-gray-400 border border-blue-200 rounded-lg shadow-sm"
+                  />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-red-500 text-sm" />
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Submitting" : "Submit"}
+          <Button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-2 px-4 rounded-xl transition duration-300 shadow-md"
+            disabled={isPending}
+          >
+            {isPending ? "Registering..." : "Register"}
           </Button>
         </form>
       </Form>
+      <p className="text-center text-sm text-gray-600 mt-6">
+        Already have an account?{" "}
+        <span
+          className="text-blue-600 hover:underline cursor-pointer font-medium"
+          onClick={() => router.push("/login")}
+        >
+          Log in
+        </span>
+      </p>
     </div>
   );
 };
+
 export default Register;
