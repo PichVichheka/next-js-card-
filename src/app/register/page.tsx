@@ -76,6 +76,7 @@ const Register = () => {
       browser: device?.browser,
       ip_address: device?.ip_address,
     });
+    // router.push("/");
   }
 
   return (
@@ -90,7 +91,9 @@ const Register = () => {
             name="user_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-blue-700 font-semibold">Username</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">
+                  Username
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Enter your username"
@@ -107,7 +110,9 @@ const Register = () => {
             name="full_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-blue-700 font-semibold">Full Name</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">
+                  Full Name
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Enter your full name"
@@ -124,7 +129,9 @@ const Register = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-blue-700 font-semibold">Email</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">
+                  Email
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Enter your email"
@@ -141,7 +148,9 @@ const Register = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-blue-700 font-semibold">Password</FormLabel>
+                <FormLabel className="text-blue-700 font-semibold">
+                  Password
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="password"
