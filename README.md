@@ -75,5 +75,5 @@ Built with extensibility in mind—easily integrate with other HR or identity sy
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/digital-id-card-system.git
-cd digital-id-card-system
+https://github.com/PichVichheka/next-js-card-.git
+
