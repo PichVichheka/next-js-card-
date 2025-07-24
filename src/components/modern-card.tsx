@@ -39,7 +39,12 @@ const ModernCard = ({
   onDelete: () => void;
 }) => {
   return (
-    <Card className="relative max-w-sm mx-auto bg-gradient-to-b from-indigo-700 via-purple-700 to-fuchsia-700 text-white rounded-3xl shadow-2xl">
+    <Card className="relative max-w-sm mx-auto text-white rounded-3xl shadow-2xl overflow-hidden"
+  style={{
+    backgroundImage: `url(https://thumbs.dreamstime.com/b/cambodian-gold-pattern-cambodian-gold-traditional-pattern-background-vector-illustration-243690304.jpg?w=768)`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  }}>
       <Dialog>
         <DialogTrigger asChild className="backdrop-blur-sm">
           <Button className="absolute top-2 right-12 bg-purple-400 text-red-800 border border-purple-600 shadow-lg hover:bg-purple-700">
@@ -80,33 +85,33 @@ const ModernCard = ({
               {me?.data?.user_name}
             </AvatarFallback>
           </Avatar>
-          <h1 className="text-2xl font-bold">{me?.data?.full_name}</h1>
-          <span className="bg-white/20 px-4 py-1 rounded-full text-sm font-medium">
+          <h1 className="text-4xl text-white-900 font-bold">{me?.data?.full_name}</h1>
+          <span className="bg-white/70 px-4 py-1 rounded-full text-black text-lg font-bold">
             {card.job}
           </span>
         </div>
 
-        <div className="bg-white/10 rounded-xl p-4 text-center">
+        <div className="bg-white/70 text black text-black font-semibold rounded-xl p-4 text-center">
           <p className="text-sm">{card.bio}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-sm font-medium">
-          <div className="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+          <div className="bg-white/70 text-black rounded-xl p-3 flex flex-col items-center">
             <Phone className="text-yellow-300 mb-1" />
             <p>Call Me</p>
             <p>{card.phone}</p>
           </div>
-          <div className="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+          <div className="bg-white/70 text-black rounded-xl p-3 flex flex-col items-center">
             <Mail className="text-pink-300 mb-1" />
             <p>Email Me</p>
             <p className="break-all">{me?.data?.email}</p>
           </div>
-          <div className="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+          <div className="bg-white/70 text-black rounded-xl p-3 flex flex-col items-center">
             <Globe className="text-blue-300 mb-1" />
             <p>Visit</p>
             <p>{card.web_site}</p>
           </div>
-          <div className="bg-white/10 rounded-xl p-3 flex flex-col items-center">
+          <div className="bg-white/70 text-black rounded-xl p-3 flex flex-col items-center">
             <MapPin className="text-green-300 mb-1" />
             <p>Find Me</p>
             <p>{card.address}</p>
@@ -120,7 +125,7 @@ const ModernCard = ({
               {card.socialLinks.map((social, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 p-2 bg-white/10 rounded-xl"
+                  className="flex items-center gap-2 p-2 bg-white/70 text-black rounded-xl"
                 >
                   {social.icon && (
                     <img
@@ -153,8 +158,8 @@ const ModernCard = ({
           Save My Contact
         </Button>
 
-        <div className="bg-white/10 text-center rounded-xl py-2 text-sm font-medium flex items-center justify-center gap-2">
-          <Instagram className="text-orange-500 w-4 h-4" />
+        <div className="bg-white/70 text-center text-black rounded-xl py-2 text-sm font-medium flex items-center justify-center gap-2">
+          <Instagram className="text-black w-4 h-4" />
           Instagram
         </div>
       </CardContent>
